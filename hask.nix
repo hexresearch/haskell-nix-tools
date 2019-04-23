@@ -1,7 +1,7 @@
-{ overrideCabal }:
+lib:
 rec {
   # Add build flags to cabal
-  addBuildFlags = flags: drv: overrideCabal drv (drv: {
+  addBuildFlags = flags: drv: lib.overrideCabal drv (drv: {
     buildFlags = (drv.buildFlags or []) ++ flags;
   });
 
