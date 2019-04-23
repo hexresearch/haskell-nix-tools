@@ -1,5 +1,5 @@
 { overrideCabal }:
-{
+rec {
   # Add build flags to cabal
   addBuildFlags = flags: drv: overrideCabal drv (drv: {
     buildFlags = (drv.buildFlags or []) ++ flags;
