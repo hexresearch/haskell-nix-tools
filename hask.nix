@@ -1,16 +1,25 @@
 lib:
 rec {
-  # Add build flags to cabal
+  /* Add build flags to cabal
+   */
   addBuildFlags = flags: drv: lib.overrideCabal drv (drv: {
     buildFlags = (drv.buildFlags or []) ++ flags;
   });
 
-  # Build derivation with -Wall flag
+  /* Build derivation with -Wall flag
+   */
   doWall     = addBuildFlags ["--ghc-option=-Wall"];
 
-  # Build derivation with -Wall and -Werror
+  /* Build derivation with -Wall and -Werror
+   */
   doPedantic = addBuildFlags ["--ghc-option=-Wall" "--ghc-option=-Werror"];
 
-  # Build without optimizations
+  /* Build without optimizations
+   */
   doNoOptimizations = addBuildFlags ["--ghc-option=-O0"];
+
+  /* Add build derivation with profiling enabled
+   */
+  doProfile = drv: lib.enableExecutableProfiling (lib.enableLibraryProfiling drv);
+
 }
