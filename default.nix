@@ -12,6 +12,8 @@ in
 {
   # Haskell specific tools
   hask          = import ./hask.nix pkgs.haskell.lib;
+  # Interpretation of haskell packages spec
+  interpret     = import ./interpret;
 
   # Ignore source from
   ignoreSources = ignore-list: source: gitignore.gitignoreSourceAux ignore-list source;
