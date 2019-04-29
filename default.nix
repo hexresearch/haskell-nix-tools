@@ -1,4 +1,4 @@
-# common Nix utils for building haskell projects 
+# common Nix utils for building haskell projects
 pkgs:
 let
   gitignore = pkgs.callPackage (pkgs.fetchFromGitHub {
@@ -10,7 +10,14 @@ let
 
 in
 {
-  # Ignore source from 
-  ignoreSources = ignore-list: source: gitignore.gitignoreSourceAux ignore-list source;
+  # Haskell specific tools
   hask          = import ./hask.nix pkgs.haskell.lib;
+
+  # Ignore source from
+  ignoreSources = ignore-list: source: gitignore.gitignoreSourceAux ignore-list source;
+
+  # Apply function if flag is true. Otherwise do nothing
+  #
+  # doIf :: Bool -> (a -> a) -> (a -> a)
+  doIf = flag: fun: if flag then fun else (x: x);
 }
