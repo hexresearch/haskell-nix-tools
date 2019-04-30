@@ -61,8 +61,20 @@ in let
           extraPerGhc = if builtins.hasAttr "${ghc}" deriv
             then readExtra deriv."${ghc}"
             else {};
+          # Compute synopsis for package overrides
+          compare = k: v:
+            let
+              nix-version = hsSuper."${k}".version or null;
+            in {
+              inherit (v) version name;
+              inherit nix-version;
+              newer = if nix-version != null then builtins.compareVersions v.version nix-version else null;
+            };
+          overridedVer = builtins.mapAttrs compare (extraCommon // extraPerGhc);
         in
-          addFlags (hsSuper // extraCommon // extraPerGhc // spec.release hsSelf)
+          addFlags (hsSuper // extraCommon // extraPerGhc // spec.release hsSelf) // {
+            local-overrides = overridedVer;
+          }
       ;
     };
   overridesPerGhc = super:
