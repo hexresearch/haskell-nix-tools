@@ -2,12 +2,18 @@
 # development. This functions generates overrides for several packages
 # at once and meanty to be used in following manner:
 #
+# > haskTools = import (pkgs.fetchFromGitHub {
+# >   owner  = "hexresearch";
+# >   repo   = "haskell-nix-tools";
+# >   rev    = "...";
+# >   sha256 = "...";
+# > }) pkgs;
+# >
 # > config = {
 # >   ...
 # >   packageOverrides = super: {
-# >     haskell = import ./interpret pkgs super {
+# >     haskell = haskTools.interpret pkgs super {
 # >       flags         = {...};
-# >       extraPackages = ./derivations;
 # >       release       = customPackages;
 # >     };
 # >     ...
@@ -15,17 +21,22 @@
 # > };
 # >
 #
+# Or alternatively for overlays
+#
+# > overlay = self: super: {
+# >   haskell = haskTools.interpret self super {
+# >     overrides = {...};
+# >     release   = xenoPackages;
+# >   };
+# > };
+
 # Fields of parameter record have folloing meaning:
 #
 # * flags contains adjustments to flags of package such as
 #   dontCheck/dontHaddock/haddock. They could be specified both for all
 #   versions of GHC and on per-GHC basis.
 #
-# * extraPackages is directory containing nix expressions for packages
-#   not in standard set.
-#
 # * release nix expressions for any other packages
-
 pkgs:
 super:
 spec:
@@ -51,7 +62,7 @@ in let
             then readExtra deriv."${ghc}"
             else {};
         in
-          addFlags (hsSuper // extraCommon // extraPerGhc // spec.release hsSuper)
+          addFlags (hsSuper // extraCommon // extraPerGhc // spec.release hsSelf)
       ;
     };
   overridesPerGhc = super:
