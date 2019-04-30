@@ -37,6 +37,12 @@
 #   versions of GHC and on per-GHC basis.
 #
 # * release nix expressions for any other packages
+#
+#
+# It also add following pseudo packages into haskell namespace:
+#
+#  * local-overrides  - comparison of version of overrides and packages in nix
+#  * release-packages - dictionary of packages from release field
 pkgs:
 super:
 spec:
@@ -61,6 +67,7 @@ in let
           extraPerGhc = if builtins.hasAttr "${ghc}" deriv
             then readExtra deriv."${ghc}"
             else {};
+          release     = spec.release hsSelf;
           # Compute synopsis for package overrides
           compare = k: v:
             let
@@ -72,8 +79,9 @@ in let
             };
           overridedVer = builtins.mapAttrs compare (extraCommon // extraPerGhc);
         in
-          addFlags (hsSuper // extraCommon // extraPerGhc // spec.release hsSelf) // {
-            local-overrides = overridedVer;
+          addFlags (hsSuper // extraCommon // extraPerGhc // release) // {
+            local-overrides  = overridedVer;
+            release-packages = builtins.mapAttrs (k: _: hsSelf."${k}") release;
           }
       ;
     };
