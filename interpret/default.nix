@@ -63,7 +63,9 @@ in let
         let
           readExtra   = dir: lib.packagesFromDirectory { directory = dir; } hsSelf hsSuper;
           deriv       = spec.overrides.derivations;
-          extraCommon = readExtra deriv.haskell;
+          extraCommon = if builtins.isList deriv.haskell
+            then builtins.foldl' (r: path: r // readExtra path) {} deriv.haskell
+            else readExtra deriv.haskell;
           extraPerGhc = if builtins.hasAttr "${ghc}" deriv
             then readExtra deriv."${ghc}"
             else {};
