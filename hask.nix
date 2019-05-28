@@ -22,4 +22,8 @@ rec {
    */
   doProfile = drv: lib.enableExecutableProfiling (lib.enableLibraryProfiling drv);
 
+  /* Add -dcore-lint GHC flag. It add internal checks to GHC optimizer
+   * but slows down compilation by ~50%
+   */
+  doCoreLint = addBuildFlags ["--ghc-option=-dcore-lint"];
 }
