@@ -6,6 +6,10 @@ rec {
     buildFlags = (drv.buildFlags or []) ++ flags;
   });
 
+  /* Build with -O2 flag
+   */
+  doFastO2   = addBuildFlags ["--ghc-option=-O2"];
+
   /* Build derivation with -Wall flag
    */
   doWall     = addBuildFlags ["--ghc-option=-Wall"];
