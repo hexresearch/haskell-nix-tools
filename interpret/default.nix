@@ -49,11 +49,8 @@ spec:
 let
   lib = pkgs.haskell.lib;
 in let
-  # Packages which are not in the default set so we add them manually
-  extraPackages = lib.packagesFromDirectory {
-    directory = spec.extraPackages;
-  };
-  # Modifications to flags of packages
+  # Create dictionary of functions which will modify flags for haskell
+  # packages in set
   flagOverrides = import ./flags.nix pkgs spec.overrides;
 in let
   # Create overrides for different GHC version
@@ -91,6 +88,7 @@ in let
     (builtins.mapAttrs (makeOverride super) flagOverrides)
   ;
 in
+# Replace overridden package sets
 super.haskell // {
   packages = super.haskell.packages // overridesPerGhc super.haskell.packages;
 }
