@@ -26,4 +26,16 @@ rec {
    * but slows down compilation by ~50%
    */
   doCoreLint = addBuildFlags ["--ghc-option=-dcore-lint"];
+
+  /* Install tests executables alongside with everything else. It's
+    * needed when debugging intermittent test failures
+    */
+  doInstallTests = drv: lib.overrideCabal drv (drv: { postInstall = ''
+    mkdir $out/tests
+    for tst in $(grep -i test-suite *.cabal | sed -e 's/ $//; s/.* //'); do
+        if [ $(find -name $tst -type f | wc -l) == 1 ]; then
+            cp -v $(find -name $tst -type f ) $out/tests
+        fi
+    done
+    '';});
 }
