@@ -22,4 +22,13 @@ in
   #
   # doIf :: Bool -> (a -> a) -> (a -> a)
   doIf = flag: fun: if flag then fun else (x: x);
+
+  # Compose several functions. Nothing bu sugar for the
+  #
+  # > f (g (h x))
+  #
+  # > compose [f g h] h
+  compose = builtins.foldl'
+    (f: g: a: f (g a))
+    (x: x);
 }
